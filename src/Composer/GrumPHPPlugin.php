@@ -64,6 +64,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function activate(Composer $composer, IOInterface $io): void
     {
+        echo "inside grumphp activate";
         $this->composer = $composer;
         $this->io = $io;
     }
@@ -73,6 +74,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function deactivate(Composer $composer, IOInterface $io): void
     {
+        echo "inside grumphp deactivate";
     }
 
     /**
@@ -80,6 +82,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function uninstall(Composer $composer, IOInterface $io): void
     {
+        echo "inside grumphp uninstall";
     }
 
     /**
@@ -107,6 +110,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function detectGrumphpAction(PackageEvent $event): void
     {
+        echo "inside grumphp detectGrumphpAction - " . $event->getName();
         if ($this->handledPackageEvent || !$this->guardPluginIsEnabled()) {
             $this->handledPackageEvent = true;
             return;
@@ -148,6 +152,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function runScheduledTasks(Event $event): void
     {
+        echo "inside grumphp runScheduledTasks - " . $event->getName();
         if ($this->configureScheduled) {
             $this->runGrumPhpCommand(self::COMMAND_CONFIGURE);
         }
