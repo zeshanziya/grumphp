@@ -401,6 +401,13 @@ services:
         tags:
             - {name: grumphp.task, task: twigcs}
 
+    GrumPHP\Task\TwigCsFixer:
+        arguments:
+            - '@process_builder'
+            - '@formatter.raw_process'
+        tags:
+            - {name: grumphp.task, task: twigcsfixer}
+
     GrumPHP\Task\XmlLint:
         arguments:
             - '@linter.xmllint'
