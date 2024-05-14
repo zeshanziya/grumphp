@@ -1,4 +1,4 @@
-#  Twig CS Fixer
+#  Twig-CS-Fixer
 
 Check and fix Twig coding standard using [VincentLanglet/Twig-CS-Fixer](https://github.com/VincentLanglet/Twig-CS-Fixer).
 You can check config file [here](https://github.com/VincentLanglet/Twig-CS-Fixer/blob/main/docs/configuration.md).
