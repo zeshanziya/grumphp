@@ -130,7 +130,7 @@ Every task has its own default configuration. It is possible to overwrite the pa
 - [Stylelint](tasks/stylelint.md)
 - [Tester](tasks/tester.md)
 - [TwigCs](tasks/twigcs.md)
-- [TwigCsFixer](tasks/twigcsfixer.md)
+- [Twig-CS-Fixer](tasks/twigcsfixer.md)
 - [XmlLint](tasks/xmllint.md)
 - [YamlLint](tasks/yamllint.md)
 
