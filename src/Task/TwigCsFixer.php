@@ -24,11 +24,35 @@ class TwigCsFixer extends AbstractExternalTask
     {
         $resolver = new OptionsResolver();
         $resolver->setDefaults([
-            'path' => '.',
+            'paths' => ['.'],
+            'level' => 'NOTICE',
+            'config' => null,
+            'report' => 'text',
+            'fix' => false,
+            'no-cache' => false,
+            'debug' => false,
+            'quiet' => false,
+            'version' => false,
+            'ansi' => false,
+            'no-ansi' => false,
+            'no-interaction' => false,
+            'verbose' => false,
             'triggered_by' => ['twig'],
         ]);
 
-        $resolver->addAllowedTypes('path', ['string']);
+        $resolver->addAllowedTypes('paths', ['array']);
+        $resolver->addAllowedTypes('level', ['string']);
+        $resolver->addAllowedTypes('config', ['null', 'string']);
+        $resolver->addAllowedTypes('report', ['string']);
+        $resolver->addAllowedTypes('fix', ['bool']);
+        $resolver->addAllowedTypes('no-cache', ['bool']);
+        $resolver->addAllowedTypes('debug', ['bool']);
+        $resolver->addAllowedTypes('quiet', ['bool']);
+        $resolver->addAllowedTypes('version', ['bool']);
+        $resolver->addAllowedTypes('ansi', ['bool']);
+        $resolver->addAllowedTypes('no-ansi', ['bool']);
+        $resolver->addAllowedTypes('no-interaction', ['bool']);
+        $resolver->addAllowedTypes('verbose', ['bool']);
 
         return ConfigOptionsResolver::fromOptionsResolver($resolver);
     }
@@ -41,27 +65,40 @@ class TwigCsFixer extends AbstractExternalTask
     public function run(ContextInterface $context): TaskResultInterface
     {
         $config = $this->getConfig()->getOptions();
+        $files = $context->getFiles()
+            ->extensions($config['triggered_by'])
+            ->paths($config['paths']);
 
-        $files = $context->getFiles()->extensions($config['triggered_by']);
-        if (0 === \count($files)) {
+        if (\count($files) === 0) {
             return TaskResult::createSkipped($this, $context);
         }
 
         $arguments = $this->processBuilder->createArgumentsForCommand('twig-cs-fixer');
         $arguments->add('lint');
-        $arguments->add('--report=text');
 
         if ($context instanceof GitPreCommitContext) {
             $arguments->addFiles($files);
         }
 
         if ($context instanceof RunContext) {
-            $arguments->add($config['path']);
+            foreach ($config['paths'] as $path) {
+                $arguments->add($path);
+            }
         }
 
-        $process = $this->processBuilder->buildProcess($arguments);
+        $arguments->addOptionalArgument('--level=%s', $config['level']);
+        $arguments->addOptionalArgument('--config=%s', $config['config']);
+        $arguments->addOptionalArgument('--report=%s', $config['report']);
 
-        $process->run();
+        $arguments->addOptionalArgument('--fix', $config['fix']);
+        $arguments->addOptionalArgument('--no-cache', $config['no-cache']);
+        $arguments->addOptionalArgument('--debug', $config['debug']);
+        $arguments->addOptionalArgument('--quiet', $config['quiet']);
+        $arguments->addOptionalArgument('--version', $config['version']);
+        $arguments->addOptionalArgument('--ansi', $config['ansi']);
+        $arguments->addOptionalArgument('--no-ansi', $config['no-ansi']);
+        $arguments->addOptionalArgument('--no-interaction', $config['no-interaction']);
+        $arguments->addOptionalArgument('--verbose', $config['verbose']);
 
         $process = $this->processBuilder->buildProcess($arguments);
         $process->run();

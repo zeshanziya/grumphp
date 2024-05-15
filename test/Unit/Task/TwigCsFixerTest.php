@@ -27,7 +27,19 @@ class TwigCsFixerTest extends AbstractExternalTaskTestCase
             [],
             [
                 'triggered_by' => ['twig'],
-                'path' => '.',
+                'paths' => ['.'],
+                'level' => 'NOTICE',
+                'config' => null,
+                'report' => 'text',
+                'fix' => false,
+                'no-cache' => false,
+                'debug' => false,
+                'quiet' => false,
+                'version' => false,
+                'ansi' => false,
+                'no-ansi' => false,
+                'no-interaction' => false,
+                'verbose' => false,
             ]
         ];
     }
@@ -80,12 +92,20 @@ class TwigCsFixerTest extends AbstractExternalTaskTestCase
         yield 'no-files' => [
             [],
             $this->mockContext(RunContext::class),
-            function () {}
+            function () {
+            }
         ];
         yield 'no-files-after-triggered-by' => [
             [],
             $this->mockContext(RunContext::class, ['notatwigfile.php']),
-            function () {}
+            function () {
+            }
+        ];
+        yield 'no-files-in-paths' => [
+            ['paths' => ['src']],
+            $this->mockContext(RunContext::class, ['other/hello.twig']),
+            function () {
+            }
         ];
     }
 
@@ -97,35 +117,39 @@ class TwigCsFixerTest extends AbstractExternalTaskTestCase
             'twig-cs-fixer',
             [
                 'lint',
-                '--report=text',
                 '.',
+                '--level=NOTICE',
+                '--report=text',
             ]
         ];
 
-        yield 'path' => [
+        yield 'paths' => [
             [
-                'path' => 'src',
+                'paths' => ['src', 'templates'],
             ],
-            $this->mockContext(RunContext::class, ['hello.twig', 'hello2.twig']),
+            $this->mockContext(RunContext::class, ['templates/hello.twig', 'templates/hello2.twig']),
             'twig-cs-fixer',
             [
                 'lint',
-                '--report=text',
                 'src',
+                'templates',
+                '--level=NOTICE',
+                '--report=text',
             ]
         ];
 
         yield 'precommit' => [
             [
-                'path' => 'src',
+                'paths' => ['templates'],
             ],
-            $this->mockContext(GitPreCommitContext::class, ['hello.twig', 'hello2.twig']),
+            $this->mockContext(GitPreCommitContext::class, ['templates/hello.twig', 'templates/hello2.twig', 'other/hello2.twig']),
             'twig-cs-fixer',
             [
                 'lint',
+                'templates/hello.twig',
+                'templates/hello2.twig',
+                '--level=NOTICE',
                 '--report=text',
-                'hello.twig',
-                'hello2.twig',
             ]
         ];
     }
