@@ -24,34 +24,20 @@ class TwigCsFixer extends AbstractExternalTask
     {
         $resolver = new OptionsResolver();
         $resolver->setDefaults([
-            'paths' => ['.'],
-            'level' => 'NOTICE',
+            'paths' => [],
+            'level' => null,
             'config' => null,
             'report' => 'text',
-            'fix' => false,
             'no-cache' => false,
-            'debug' => false,
-            'quiet' => false,
-            'version' => false,
-            'ansi' => false,
-            'no-ansi' => false,
-            'no-interaction' => false,
             'verbose' => false,
             'triggered_by' => ['twig'],
         ]);
 
         $resolver->addAllowedTypes('paths', ['array']);
-        $resolver->addAllowedTypes('level', ['string']);
+        $resolver->addAllowedTypes('level', ['null', 'string']);
         $resolver->addAllowedTypes('config', ['null', 'string']);
-        $resolver->addAllowedTypes('report', ['string']);
-        $resolver->addAllowedTypes('fix', ['bool']);
+        $resolver->addAllowedTypes('report', ['null', 'string']);
         $resolver->addAllowedTypes('no-cache', ['bool']);
-        $resolver->addAllowedTypes('debug', ['bool']);
-        $resolver->addAllowedTypes('quiet', ['bool']);
-        $resolver->addAllowedTypes('version', ['bool']);
-        $resolver->addAllowedTypes('ansi', ['bool']);
-        $resolver->addAllowedTypes('no-ansi', ['bool']);
-        $resolver->addAllowedTypes('no-interaction', ['bool']);
         $resolver->addAllowedTypes('verbose', ['bool']);
 
         return ConfigOptionsResolver::fromOptionsResolver($resolver);
@@ -81,23 +67,14 @@ class TwigCsFixer extends AbstractExternalTask
         }
 
         if ($context instanceof RunContext) {
-            foreach ($config['paths'] as $path) {
-                $arguments->add($path);
-            }
+            $arguments->addArgumentArray('%s', $config['paths']);
         }
 
         $arguments->addOptionalArgument('--level=%s', $config['level']);
         $arguments->addOptionalArgument('--config=%s', $config['config']);
         $arguments->addOptionalArgument('--report=%s', $config['report']);
 
-        $arguments->addOptionalArgument('--fix', $config['fix']);
         $arguments->addOptionalArgument('--no-cache', $config['no-cache']);
-        $arguments->addOptionalArgument('--debug', $config['debug']);
-        $arguments->addOptionalArgument('--quiet', $config['quiet']);
-        $arguments->addOptionalArgument('--version', $config['version']);
-        $arguments->addOptionalArgument('--ansi', $config['ansi']);
-        $arguments->addOptionalArgument('--no-ansi', $config['no-ansi']);
-        $arguments->addOptionalArgument('--no-interaction', $config['no-interaction']);
         $arguments->addOptionalArgument('--verbose', $config['verbose']);
 
         $process = $this->processBuilder->buildProcess($arguments);

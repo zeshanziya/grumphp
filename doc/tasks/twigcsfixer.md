@@ -17,35 +17,28 @@ The task lives under the `twigcsfixer` namespace and has following configurable 
 grumphp:
     tasks:
         twigcsfixer:
-            paths: ['.']
-            level: 'NOTICE'
+            paths: []
+            level: ~
             config: ~
             report: 'text'
-            fix: false
             no-cache: false
-            debug: false
-            quiet: false
-            version: false
-            ansi: false
-            no-ansi: false
-            no-interaction: false
             verbose: false
             triggered_by: ['twig']
 ```
 
 **paths**
 
-*Default: null*
+*Default: []*
 
-By default [`.`] (current folder) will be used.
+By default, current folder will be used.
 On precommit only changed files that live in the paths will be passed as arguments.
 
 
 **level**
 
-*Default: 'NOTICE'*
+*Default: 'notice'*
 
-The level of the messages to display (possibles values are : 'NOTICE', 'WARNING', 'ERROR').
+The level of the messages to display (possibles values are : 'notice', 'warning', 'error').
 
 **config**
 
@@ -68,54 +61,11 @@ Supported formats are:
 - `junit` following JUnit schema XML from Jenkins.
 - `null` if you don't want any reporting.
 
-
-**fix**
-
-*Default: false*
-
-Fix the violations.
-
 **no-cache**
 
 *Default: false*
 
 Do not use cache.
-
-**debug**
-
-*Default: false*
-
-Display debugging information.
-
-**quiet**
-
-*Default: false*
-
-Do not output any message.
-
-**version**
-
-*Default: false*
-
-Display this application version.
-
-**ansi**
-
-*Default: false*
-
-Force ANSI output.
-
-**no-ansi**
-
-*Default: false*
-
-Disable ANSI output.
-
-**no-interaction**
-
-*Default: false*
-
-Do not ask any interactive question.
 
 **verbose**
 

@@ -27,18 +27,11 @@ class TwigCsFixerTest extends AbstractExternalTaskTestCase
             [],
             [
                 'triggered_by' => ['twig'],
-                'paths' => ['.'],
-                'level' => 'NOTICE',
+                'paths' => [],
+                'level' => null,
                 'config' => null,
                 'report' => 'text',
-                'fix' => false,
                 'no-cache' => false,
-                'debug' => false,
-                'quiet' => false,
-                'version' => false,
-                'ansi' => false,
-                'no-ansi' => false,
-                'no-interaction' => false,
                 'verbose' => false,
             ]
         ];
@@ -117,8 +110,6 @@ class TwigCsFixerTest extends AbstractExternalTaskTestCase
             'twig-cs-fixer',
             [
                 'lint',
-                '.',
-                '--level=NOTICE',
                 '--report=text',
             ]
         ];
@@ -133,7 +124,6 @@ class TwigCsFixerTest extends AbstractExternalTaskTestCase
                 'lint',
                 'src',
                 'templates',
-                '--level=NOTICE',
                 '--report=text',
             ]
         ];
@@ -148,8 +138,104 @@ class TwigCsFixerTest extends AbstractExternalTaskTestCase
                 'lint',
                 'templates/hello.twig',
                 'templates/hello2.twig',
-                '--level=NOTICE',
                 '--report=text',
+            ]
+        ];
+
+        yield 'level' => [
+            [
+                'level' => 'warning',
+            ],
+            $this->mockContext(RunContext::class, ['hello.twig', 'hello2.twig']),
+            'twig-cs-fixer',
+            [
+                'lint',
+                '--level=warning',
+                '--report=text',
+            ]
+        ];
+
+        yield 'config' => [
+            [
+                'config' => 'twig-cs-fixer.php',
+            ],
+            $this->mockContext(RunContext::class, ['hello.twig', 'hello2.twig']),
+            'twig-cs-fixer',
+            [
+                'lint',
+                '--config=twig-cs-fixer.php',
+                '--report=text',
+            ]
+        ];
+
+        yield 'no-cache' => [
+            [
+                'no-cache' => true,
+            ],
+            $this->mockContext(RunContext::class, ['hello.twig', 'hello2.twig']),
+            'twig-cs-fixer',
+            [
+                'lint',
+                '--report=text',
+                '--no-cache',
+            ]
+        ];
+
+        yield 'verbose' => [
+            [
+                'verbose' => true,
+            ],
+            $this->mockContext(RunContext::class, ['hello.twig', 'hello2.twig']),
+            'twig-cs-fixer',
+            [
+                'lint',
+                '--report=text',
+                '--verbose',
+            ]
+        ];
+
+        yield 'report' => [
+            [
+                'report' => 'json',
+            ],
+            $this->mockContext(RunContext::class, ['hello.twig', 'hello2.twig']),
+            'twig-cs-fixer',
+            [
+                'lint',
+                '--report=json',
+            ]
+        ];
+
+        yield 'default report' => [
+            [
+                'report' => null,
+            ],
+            $this->mockContext(RunContext::class, ['hello.twig', 'hello2.twig']),
+            'twig-cs-fixer',
+            [
+                'lint',
+            ]
+        ];
+
+        yield 'multiple options' => [
+            [
+                'paths' => ['src', 'templates'],
+                'level' => 'warning',
+                'config' => 'twig-cs-fixer.php',
+                'no-cache' => true,
+                'verbose' => true,
+            ],
+            $this->mockContext(RunContext::class, ['templates/hello.twig', 'templates/hello2.twig']),
+            'twig-cs-fixer',
+            [
+                'lint',
+                'src',
+                'templates',
+                '--level=warning',
+                '--config=twig-cs-fixer.php',
+                '--report=text',
+                '--no-cache',
+                '--verbose',
             ]
         ];
     }
