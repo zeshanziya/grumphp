@@ -80,7 +80,8 @@
         "sstalle/php7cc": "Lets GrumPHP check PHP 5.3 - 5.6 code compatibility with PHP 7.",
         "symfony/phpunit-bridge": "Lets GrumPHP run your unit tests with the phpunit-bridge of Symfony.",
         "symplify/easy-coding-standard": "Lets GrumPHP check coding standard.",
-        "vimeo/psalm": "Lets GrumPHP discover errors in your code without running it."
+        "vimeo/psalm": "Lets GrumPHP discover errors in your code without running it.",
+        "vincentlanglet/twig-cs-fixer": "Lets GrumPHP check and fix twig coding standard."
     },
     "autoload": {
         "psr-4": {
