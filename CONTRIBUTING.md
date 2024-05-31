@@ -5,8 +5,8 @@ feel free to do this, but remember to follow this few simple rules:
 
 ## Branching strategy
 
-- __Always__ base your changes on the `master` branch (all new development happens here),
-- When you create Pull Request, always select `master` branch as target, otherwise it
+- __Always__ base your changes on the latest version `v<version>.x` branch (all new development happens here),
+- When you create Pull Request, always select `v<version>.x` branch as target, otherwise it
 will be closed (this is selected by default).
 
 ## Coverage
