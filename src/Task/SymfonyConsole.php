@@ -41,7 +41,7 @@ class SymfonyConsole extends AbstractExternalTask
             return TaskResult::createSkipped($this, $context);
         }
 
-        if (0 === \count($config['command'])) {
+        if ('' === \implode('', $config['command'])) {
             return TaskResult::createNonBlockingFailed(
                 $this,
                 $context,

@@ -173,7 +173,7 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
 
     public function provideFailsNonBlockingOnStuff(): iterable
     {
-        yield 'no-command' => [
+        yield 'missing-command' => [
             [
                 // missing command
             ],
@@ -182,9 +182,18 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
             'Missing "command" configuration for task "symfony_console".'
         ];
 
-        yield 'missing-command-data' => [
+        yield 'empty-command-array' => [
             [
                 'command' => [], // missing command config
+            ],
+            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
+            function() {},
+            'Missing "command" configuration for task "symfony_console".'
+        ];
+
+        yield 'empty-command-data' => [
+            [
+                'command' => [""], // empty command config
             ],
             $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
             function() {},
