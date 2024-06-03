@@ -22,12 +22,16 @@ grumphp:
             command: [ "lint:container", "-vvv" ]
 ```
 
+**Note:** GrumPHP will use the default Symfony console path `./bin/console` from the project root.
+
+### Parameters
+
 **command**
 
 Specify the symfony command with defined options and arguments.  
 Verify the installed console component version for available commands `./bin/console list`
 
-## Note: Multiple Console command tasks
+## Multiple Console command tasks
 
 [Run the same task twice with different configuration](../tasks.md#run-the-same-task-twice-with-different-configuration)
 
