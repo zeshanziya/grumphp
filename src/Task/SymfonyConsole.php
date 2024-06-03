@@ -12,6 +12,7 @@ use GrumPHP\Task\Context\ContextInterface;
 use GrumPHP\Task\Context\GitPreCommitContext;
 use GrumPHP\Task\Context\RunContext;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Process\PhpExecutableFinder;
 
 /** @extends AbstractExternalTask<ProcessFormatterInterface> */
 class SymfonyConsole extends AbstractExternalTask
@@ -23,8 +24,26 @@ class SymfonyConsole extends AbstractExternalTask
                 ->setDefaults([
                     'bin' => './bin/console',
                     'command' => [],
+                    'ignore_patterns' => [],
+                    'whitelist_patterns' => [],
+                    'triggered_by' => ['php', 'yml', 'xml'],
+                    'run_always' => false,
                 ])
+                ->addAllowedTypes('bin', ['string'])
                 ->addAllowedTypes('command', ['string[]'])
+                ->addAllowedTypes('ignore_patterns', ['array'])
+                ->addAllowedTypes('whitelist_patterns', ['array'])
+                ->addAllowedTypes('triggered_by', ['array'])
+                ->addAllowedTypes('run_always', ['bool'])
+                ->setAllowedValues(
+                    'bin',
+                    static fn(string $bin): bool => '' !== $bin
+                )
+                ->setAllowedValues(
+                    'command',
+                    static fn(array $command): bool => '' !== \implode('', $command)
+                )
+                ->setAllowedValues('bin', static fn(string $bin): bool => '' !== $bin)
                 ->setRequired('command')
         );
     }
@@ -37,19 +56,22 @@ class SymfonyConsole extends AbstractExternalTask
     public function run(ContextInterface $context): TaskResultInterface
     {
         $config = $this->getConfig()->getOptions();
-        if (0 === \count($context->getFiles())) {
+
+        $files = $context->getFiles()
+            ->extensions($config['triggered_by'])
+            ->paths($config['whitelist_patterns'] ?? [])
+            ->notPaths($config['ignore_patterns'] ?? []);
+        if (!$config['run_always'] && 0 === \count($files)) {
             return TaskResult::createSkipped($this, $context);
         }
 
-        if ('' === \implode('', $config['command'])) {
-            return TaskResult::createNonBlockingFailed(
-                $this,
-                $context,
-                'Missing "command" configuration for task "symfony_console".'
-            );
+        $php = (new PhpExecutableFinder())->find();
+        if (false === $php) {
+            return TaskResult::createFailed($this, $context, 'Unable to locate the PHP executable.');
         }
 
-        $arguments = $this->processBuilder->createArgumentsForCommand($config['bin']);
+        $arguments = $this->processBuilder->createArgumentsForCommand($php);
+        $arguments->add($config['bin']);
         $arguments->addArgumentArray('%s', $config['command']);
 
         $process = $this->processBuilder->buildProcess($arguments);
