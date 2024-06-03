@@ -28,7 +28,11 @@ final class ContainerBuilder
 
         // Load basic service file + custom user configuration
         $configDir = dirname(__DIR__, 2).$filesystem->ensureValidSlashes('/resources/config');
-        $loader = LoaderFactory::createLoader($container, [$configDir]);
+        $configFileDir = dirname($path);
+        $loader = LoaderFactory::createLoader(
+            $container,
+            [$configDir, $configFileDir]
+        );
         $loader->load('config.yml');
         $loader->load('console.yml');
         $loader->load('fixer.yml');

@@ -37,4 +37,28 @@ class ConfigurationTest extends AbstractE2ETestCase
             $process->getOutput(),
         );
     }
+
+    /** @test */
+    function it_should_be_able_to_resolve_dist_file_imports()
+    {
+        $this->initializeGitInRootDir();
+        $this->initializeComposer($this->rootDir);
+
+        // grumphp.yml file.
+        $grumphpFile = $this->initializeGrumphpConfig(path: $this->rootDir, customConfig: [
+            'imports' => [
+                ['resource' => 'grumphp.yml.dist']
+            ],
+        ]);
+        // grumphp.yml.dist file which is imported, doesn't matter what's in this imported file.
+        $grumphpDistFile = $this->initializeGrumphpConfig(path: $this->rootDir, fileName: 'grumphp.yml.dist');
+
+        $this->installComposer($this->rootDir);
+        $this->ensureHooksExist($this->rootDir);
+
+        $this->enableValidatePathsTask($grumphpFile, $this->rootDir);
+
+        $this->commitAll($this->rootDir);
+        $this->runGrumphp($this->rootDir);
+    }
 }
