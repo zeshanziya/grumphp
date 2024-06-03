@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace GrumPHPTest\Unit\Task;
 
-use GrumPHP\Runner\TaskResultInterface;
-use GrumPHP\Task\Context\ContextInterface;
 use GrumPHP\Task\Context\GitPreCommitContext;
 use GrumPHP\Task\Context\RunContext;
 use GrumPHP\Task\SymfonyConsole;
 use GrumPHP\Task\TaskInterface;
 use GrumPHP\Test\Task\AbstractExternalTaskTestCase;
+use Symfony\Component\Process\PhpExecutableFinder;
 
 final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
 {
+    private static string|false $php;
+
+    private static function php(): string|false
+    {
+        return self::$php ??= (new PhpExecutableFinder())->find();
+    }
+
     protected function provideTask(): TaskInterface
     {
         return new SymfonyConsole(
@@ -25,26 +31,20 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
     public function provideConfigurableOptions(): iterable
     {
         yield 'default' => [
-            [],
-            [
-                'bin' => './bin/console',
-                'command' => [],
-            ]
-        ];
-
-        yield 'single-command' => [
             [
                 'command' => ['task:run'],
             ],
             [
                 'bin' => './bin/console',
-                'command' => [
-                    'task:run'
-                ],
+                'command' => ['task:run'],
+                'ignore_patterns' => [],
+                'whitelist_patterns' => [],
+                'triggered_by' => ['php', 'yml', 'xml'],
+                'run_always' => false,
             ]
         ];
 
-        yield 'array-command' => [
+        yield 'with-array-command' => [
             [
                 'command' => ['task:run', '--env', 'dev', '-vvv'],
             ],
@@ -56,6 +56,10 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
                     'dev',
                     '-vvv'
                 ],
+                'ignore_patterns' => [],
+                'whitelist_patterns' => [],
+                'triggered_by' => ['php', 'yml', 'xml'],
+                'run_always' => false,
             ]
         ];
     }
@@ -87,7 +91,7 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
             $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
             function() {
                 $process = $this->mockProcess(1);
-                $this->mockProcessBuilder('./bin/console', $process);
+                $this->mockProcessBuilder(self::php(), $process);
                 $this->formatter->format($process)->willReturn('nope');
             },
             'nope'
@@ -102,7 +106,18 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
             ],
             $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
             function() {
-                $this->mockProcessBuilder('./bin/console', $this->mockProcess());
+                $this->mockProcessBuilder(self::php(), $this->mockProcess());
+            }
+        ];
+
+        yield 'exitCode0WhenRunAlways' => [
+            [
+                'command' => ['--version'],
+                'run_always' => true,
+            ],
+            $this->mockContext(RunContext::class, ['non-related.log']),
+            function() {
+                $this->mockProcessBuilder(self::php(), $this->mockProcess());
             }
         ];
     }
@@ -110,8 +125,39 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
     public function provideSkipsOnStuff(): iterable
     {
         yield 'no-files' => [
-            [],
+            [
+                'command' => ['task:run']
+            ],
             $this->mockContext(RunContext::class),
+            function() {
+            }
+        ];
+
+        yield 'no-files-after-ignore-patterns' => [
+            [
+                'command' => ['task:run'],
+                'ignore_patterns' => ['test/'],
+            ],
+            $this->mockContext(RunContext::class, ['test/file.php']),
+            function() {
+            }
+        ];
+
+        yield 'no-files-after-whitelist-patterns' => [
+            [
+                'command' => ['task:run'],
+                'whitelist_patterns' => ['src/'],
+            ],
+            $this->mockContext(RunContext::class, ['config/file.php']),
+            function() {
+            }
+        ];
+
+        yield 'no-files-after-triggered-by' => [
+            [
+                'command' => ['task:run'],
+            ],
+            $this->mockContext(RunContext::class, ['non-trigger-extension.log']),
             function() {
             }
         ];
@@ -124,8 +170,9 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
                 'command' => ['lint:container']
             ],
             $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
-            './bin/console',
+            self::php(),
             [
+                './bin/console',
                 'lint:container',
             ]
         ];
@@ -140,64 +187,14 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
                 ]
             ],
             $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
-            './bin/console',
+            self::php(),
             [
+                './bin/console',
                 'task:run',
                 '--env',
                 'dev',
                 '-vvv'
             ]
-        ];
-    }
-
-    /**
-     * @test
-     * @dataProvider provideFailsNonBlockingOnStuff
-     */
-    public function it_fails_non_blocking_on_stuff(
-        array $config,
-        ContextInterface $context,
-        callable $configurator,
-        string $expectedErrorMessage,
-    ): void {
-        $task = $this->configureTask($config);
-        \Closure::bind($configurator, $this)($task->getConfig()->getOptions(), $context);
-        $result = $task->run($context);
-
-        self::assertInstanceOf(TaskResultInterface::class, $result);
-        self::assertSame(TaskResultInterface::NONBLOCKING_FAILED, $result->getResultCode());
-        self::assertSame($task, $result->getTask());
-        self::assertSame($context, $result->getContext());
-        self::assertSame($expectedErrorMessage, $result->getMessage());
-    }
-
-    public function provideFailsNonBlockingOnStuff(): iterable
-    {
-        yield 'missing-command' => [
-            [
-                // missing command
-            ],
-            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
-            function() {},
-            'Missing "command" configuration for task "symfony_console".'
-        ];
-
-        yield 'empty-command-array' => [
-            [
-                'command' => [], // missing command config
-            ],
-            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
-            function() {},
-            'Missing "command" configuration for task "symfony_console".'
-        ];
-
-        yield 'empty-command-data' => [
-            [
-                'command' => [""], // empty command config
-            ],
-            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
-            function() {},
-            'Missing "command" configuration for task "symfony_console".'
         ];
     }
 }
