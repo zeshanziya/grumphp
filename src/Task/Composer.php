@@ -67,9 +67,12 @@ class Composer extends AbstractExternalTask
     public function run(ContextInterface $context): TaskResultInterface
     {
         $config = $this->getConfig()->getOptions();
+        $composerDir = pathinfo($config['file'], PATHINFO_DIRNAME);
+        $composerFile = pathinfo($config['file'], PATHINFO_BASENAME);
+        $composerLockFile = $this->getLockFile($composerFile);
         $files = $context->getFiles()
-            ->path(pathinfo($config['file'], PATHINFO_DIRNAME))
-            ->name(pathinfo($config['file'], PATHINFO_BASENAME));
+            ->path($composerDir)
+            ->names([$composerFile, $composerLockFile]);
         if (0 === \count($files)) {
             return TaskResult::createSkipped($this, $context);
         }
@@ -115,5 +118,15 @@ class Composer extends AbstractExternalTask
         }
 
         return false;
+    }
+
+    /**
+     * Verbatim copy from \Composer\Factory::getLockFile.
+     */
+    private static function getLockFile(string $composerFile): string
+    {
+        return 'json' === pathinfo($composerFile, PATHINFO_EXTENSION)
+            ? substr($composerFile, 0, -4) . 'lock'
+            : $composerFile . '.lock';
     }
 }
