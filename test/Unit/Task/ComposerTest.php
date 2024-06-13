@@ -195,6 +195,15 @@ class ComposerTest extends AbstractExternalTaskTestCase
                 './composer.json',
             ]
         ];
+        yield 'lock-only' => [
+            [],
+            $this->mockContext(RunContext::class, ['composer.lock']),
+            'composer',
+            [
+                'validate',
+                './composer.json',
+            ]
+        ];
         yield 'no-check-all' => [
             [
                 'no_check_all' => true,
