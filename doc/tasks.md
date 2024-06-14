@@ -61,6 +61,7 @@ grumphp:
         securitychecker_symfony: ~
         shell: ~
         stylelint: ~
+        symfony_console: ~
         tester: ~
         twigcs: ~
         twigcsfixer: ~
@@ -128,6 +129,7 @@ Every task has its own default configuration. It is possible to overwrite the pa
   - [Symfony](tasks/securitychecker/symfony.md)
 - [Shell](tasks/shell.md)
 - [Stylelint](tasks/stylelint.md)
+- [Symfony Console](tasks/symfony_console.md)
 - [Tester](tasks/tester.md)
 - [TwigCs](tasks/twigcs.md)
 - [Twig-CS-Fixer](tasks/twigcsfixer.md)

@@ -6,7 +6,6 @@ namespace GrumPHP\Test\Task;
 
 use GrumPHP\Collection\FilesCollection;
 use GrumPHP\Runner\TaskResult;
-use GrumPHP\Runner\TaskResultInterface;
 use GrumPHP\Task\Config\EmptyTaskConfig;
 use GrumPHP\Task\Config\Metadata;
 use GrumPHP\Task\Config\TaskConfig;
@@ -47,7 +46,7 @@ abstract class AbstractTaskTestCase extends TestCase
     public function it_contains_configurable_options(array $input, ?array $output): void
     {
         if (!$output) {
-            self::expectException(ExceptionInterface::class);
+            $this->expectException(ExceptionInterface::class);
         }
 
         $resolver = $this->task::getConfigurableOptions();

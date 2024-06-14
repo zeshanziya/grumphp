@@ -386,6 +386,13 @@ services:
         tags:
             - {name: grumphp.task, task: stylelint}
 
+    GrumPHP\Task\SymfonyConsole:
+        arguments:
+            - '@process_builder'
+            - '@formatter.raw_process'
+        tags:
+          - {name: grumphp.task, task: symfony_console}
+
     GrumPHP\Task\Tester:
         class:
         arguments:
