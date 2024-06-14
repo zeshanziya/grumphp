@@ -2,13 +2,9 @@
 
 Run a symfony console command.
 
-## Composer
+## Requirements
 
-Requires the Symfony Console component: [Console Component](https://symfony.com/components/Console)
-
-```bash
-composer require symfony/console
-```
+This task requires a Symfony application with console component.
 
 ## Config
 

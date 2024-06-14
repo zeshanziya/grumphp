@@ -9,17 +9,9 @@ use GrumPHP\Task\Context\RunContext;
 use GrumPHP\Task\SymfonyConsole;
 use GrumPHP\Task\TaskInterface;
 use GrumPHP\Test\Task\AbstractExternalTaskTestCase;
-use Symfony\Component\Process\PhpExecutableFinder;
 
 final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
 {
-    private static string|false $php;
-
-    private static function php(): string|false
-    {
-        return self::$php ??= (new PhpExecutableFinder())->find();
-    }
-
     protected function provideTask(): TaskInterface
     {
         return new SymfonyConsole(
@@ -91,7 +83,7 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
             $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
             function() {
                 $process = $this->mockProcess(1);
-                $this->mockProcessBuilder(self::php(), $process);
+                $this->mockProcessBuilder('php', $process);
                 $this->formatter->format($process)->willReturn('nope');
             },
             'nope'
@@ -106,7 +98,7 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
             ],
             $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
             function() {
-                $this->mockProcessBuilder(self::php(), $this->mockProcess());
+                $this->mockProcessBuilder('php', $this->mockProcess());
             }
         ];
 
@@ -117,7 +109,7 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
             ],
             $this->mockContext(RunContext::class, ['non-related.log']),
             function() {
-                $this->mockProcessBuilder(self::php(), $this->mockProcess());
+                $this->mockProcessBuilder('php', $this->mockProcess());
             }
         ];
     }
@@ -170,7 +162,7 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
                 'command' => ['lint:container']
             ],
             $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
-            self::php(),
+            'php',
             [
                 './bin/console',
                 'lint:container',
@@ -187,7 +179,7 @@ final class SymfonyConsoleTest extends AbstractExternalTaskTestCase
                 ]
             ],
             $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
-            self::php(),
+            'php',
             [
                 './bin/console',
                 'task:run',

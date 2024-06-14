@@ -78,7 +78,6 @@
         "sebastian/phpcpd": "Lets GrumPHP find duplicated code.",
         "squizlabs/php_codesniffer": "Lets GrumPHP sniff on your code.",
         "sstalle/php7cc": "Lets GrumPHP check PHP 5.3 - 5.6 code compatibility with PHP 7.",
-        "symfony/console": "Lets GrumPHP run Symfony Console commands.",
         "symfony/phpunit-bridge": "Lets GrumPHP run your unit tests with the phpunit-bridge of Symfony.",
         "symplify/easy-coding-standard": "Lets GrumPHP check coding standard.",
         "vimeo/psalm": "Lets GrumPHP discover errors in your code without running it.",

@@ -12,7 +12,6 @@ use GrumPHP\Task\Context\ContextInterface;
 use GrumPHP\Task\Context\GitPreCommitContext;
 use GrumPHP\Task\Context\RunContext;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Process\PhpExecutableFinder;
 
 /** @extends AbstractExternalTask<ProcessFormatterInterface> */
 class SymfonyConsole extends AbstractExternalTask
@@ -65,12 +64,7 @@ class SymfonyConsole extends AbstractExternalTask
             return TaskResult::createSkipped($this, $context);
         }
 
-        $php = (new PhpExecutableFinder())->find();
-        if (false === $php) {
-            return TaskResult::createFailed($this, $context, 'Unable to locate the PHP executable.');
-        }
-
-        $arguments = $this->processBuilder->createArgumentsForCommand($php);
+        $arguments = $this->processBuilder->createArgumentsForCommand('php');
         $arguments->add($config['bin']);
         $arguments->addArgumentArray('%s', $config['command']);
 
