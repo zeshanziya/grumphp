@@ -24,6 +24,7 @@ class DoctrineOrm extends AbstractExternalTask
         $resolver->setDefaults([
             'skip_mapping' => false,
             'skip_sync' => false,
+            'skip_property_types' => false,
             'triggered_by' => ['php', 'xml', 'yml'],
         ]);
 
@@ -58,6 +59,7 @@ class DoctrineOrm extends AbstractExternalTask
         $arguments->add('orm:validate-schema');
         $arguments->addOptionalArgument('--skip-mapping', $config['skip_mapping']);
         $arguments->addOptionalArgument('--skip-sync', $config['skip_sync']);
+        $arguments->addOptionalArgument('--skip-property-types', $config['skip_property_types']);
 
         $process = $this->processBuilder->buildProcess($arguments);
 
