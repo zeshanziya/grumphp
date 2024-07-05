@@ -25,6 +25,7 @@ class DoctrineOrmTest extends AbstractExternalTaskTestCase
         yield 'defaults' => [
             [],
             [
+                'skip_property_types' => false,
                 'skip_mapping' => false,
                 'skip_sync' => false,
                 'triggered_by' => ['php', 'xml', 'yml'],
@@ -118,6 +119,17 @@ class DoctrineOrmTest extends AbstractExternalTaskTestCase
             [
                 'orm:validate-schema',
                 '--skip-sync',
+            ]
+        ];
+        yield 'skip-property-types' => [
+            [
+                'skip_property_types' => true,
+            ],
+            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
+            'doctrine',
+            [
+                'orm:validate-schema',
+                '--skip-property-types',
             ]
         ];
     }
