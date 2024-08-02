@@ -69,6 +69,14 @@ class FixableTaskResult implements TaskResultInterface
         return $this->result->getContext();
     }
 
+    public function withContext(ContextInterface $context): static
+    {
+        $new = clone $this;
+        $new->result = $this->result->withContext($context);
+
+        return $new;
+    }
+
     public function withAppendedMessage(string $message): TaskResultInterface
     {
         $new = clone $this;
