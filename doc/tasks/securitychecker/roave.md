@@ -5,7 +5,7 @@ The Security Checker will check your `composer.lock` file for known security vul
 ***Composer***
 
 ```
-composer require --dev roave/security-advisories:lastest-dev
+composer require --dev roave/security-advisories:dev-latest
 ```
 More information about the library can be found on [GitHub](https://github.com/Roave/SecurityAdvisories).
 
