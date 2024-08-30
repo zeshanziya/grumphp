@@ -33,5 +33,7 @@ interface TaskResultInterface
 
     public function getContext(): ContextInterface;
 
+    public function withContext(ContextInterface $context): static;
+
     public function withAppendedMessage(string $message): self;
 }

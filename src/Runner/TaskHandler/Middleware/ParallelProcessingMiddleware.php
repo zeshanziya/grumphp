@@ -58,7 +58,9 @@ class ParallelProcessingMiddleware implements TaskHandlerMiddlewareInterface
 
         return async(function () use ($task, $runnerContext, $execution): TaskResultInterface {
             try {
-                return $execution->getFuture()->await();
+                $result = $execution->getFuture()->await();
+
+                return $this->swapSerializedContext($result, $runnerContext);
             } catch (\Throwable $exception) {
                 return TaskResult::createFailed(
                     $task,
@@ -74,5 +76,19 @@ class ParallelProcessingMiddleware implements TaskHandlerMiddlewareInterface
         return $this->IO->isVerbose()
             ? ParallelException::fromVerboseThrowable($error)
             : ParallelException::fromThrowable($error);
+    }
+
+    /**
+     * The results coming back from a parallel worker contains a serialized context.
+     * This context can be rather big, which can cause memory issues.
+     *
+     * This method will swap the serialized context with the original
+     * context so that the serialized one gets garbage collected.
+     */
+    private function swapSerializedContext(
+        TaskResultInterface $result,
+        TaskRunnerContext $runnerContext
+    ): TaskResultInterface {
+        return $result->withContext($runnerContext->getTaskContext());
     }
 }
