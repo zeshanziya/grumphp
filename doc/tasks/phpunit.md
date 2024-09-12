@@ -23,6 +23,10 @@ grumphp:
             exclude_group: []
             always_execute: false
             order: null
+            coverage-clover: null
+            coverage-html: null
+            coverage-php: null
+            coverage-xml: null
 ```
 
 **config_file**
@@ -69,3 +73,29 @@ Always run the whole test suite, even if no PHP files were changed.
 *Default: null*
 
 If you wish to run tests in a specific order. `order: [default,defects,duration,no-depends,random,reverse,size]`
+
+
+**coverage-clover**
+
+*Default: null*
+
+Generate code coverage report in Clover XML format.
+
+**coverage-html**
+
+*Default: null*
+
+Generate code coverage report in HTML format.
+
+**coverage-php**
+
+*Default: null*
+
+Serialize PHP_CodeCoverage object to file.
+
+**coverage-xml**
+
+*Default: null*
+
+Generate code coverage report in PHPUnit XML format.
+
