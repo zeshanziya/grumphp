@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 class ApplicationConfigurator
 {
     const APP_NAME = 'GrumPHP';
-    const APP_VERSION = '2.7.0';
+    const APP_VERSION = '2.8.0';
 
     public function configure(Application $application): void
     {
