@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GrumPHPTest\Unit\Task;
 
+use GrumPHP\Runner\TaskResult;
 use GrumPHP\Task\CloverCoverage;
 use GrumPHP\Task\Context\GitPreCommitContext;
 use GrumPHP\Task\Context\RunContext;
@@ -36,7 +37,8 @@ class CloverCoverageTest extends AbstractTaskTestCase
                 'clover_file' => 'coverage.xml',
             ],
             [
-                'level' => 100,
+                'minimum_level' => 100.0,
+                'target_level' => null,
                 'clover_file' => 'coverage.xml',
             ]
         ];
@@ -70,23 +72,23 @@ class CloverCoverageTest extends AbstractTaskTestCase
             function () {
                 $this->filesystem->exists('coverage.xml')->willReturn(false);
             },
-            'Invalid input file provided'
+            'File "coverage.xml" doesn\'t exists.'
         ];
         yield 'level0' => [
             [
                 'clover_file' => 'coverage.xml',
-                'level' => 0,
+                'minimum_level' => 0,
             ],
             $this->mockContext(RunContext::class, ['coverage.xml']),
             function () {
                 $this->filesystem->exists('coverage.xml')->willReturn(true);
             },
-            'An integer checked percentage must be given as second parameter'
+            'You must provide a positive minimum level between 1-100 for code coverage.'
         ];
         yield 'levelNotReached' => [
             [
                 'clover_file' => 'coverage.xml',
-                'level' => 100,
+                'minimum_level' => 100,
             ],
             $this->mockContext(RunContext::class, ['coverage.xml']),
             function () {
@@ -97,6 +99,23 @@ class CloverCoverageTest extends AbstractTaskTestCase
             },
             'Code coverage is 60%, which is below the accepted 100%'
         ];
+        yield 'targetLevelNotReached' => [
+            [
+                'clover_file' => 'coverage.xml',
+                'minimum_level' => 50,
+                'target_level' => 70,
+            ],
+            $this->mockContext(RunContext::class, ['coverage.xml']),
+            function () {
+                $this->filesystem->exists('coverage.xml')->willReturn(true);
+                $this->filesystem->readFromFileInfo(Argument::which('getBasename', 'coverage.xml'))->willReturn(
+                    file_get_contents(TEST_BASE_PATH.'/fixtures/clover_coverage/60-percent-coverage.xml')
+                );
+            },
+            'Code coverage is 60%, which is below the target 70%',
+            TaskResult::class,
+            TaskResult::NONBLOCKING_FAILED,
+        ];
     }
 
     public function providePassesOnStuff(): iterable
@@ -104,7 +123,21 @@ class CloverCoverageTest extends AbstractTaskTestCase
         yield 'levelReached' => [
             [
                 'clover_file' => 'coverage.xml',
-                'level' => 50,
+                'minimum_level' => 50,
+            ],
+            $this->mockContext(RunContext::class, ['coverage.xml']),
+            function () {
+                $this->filesystem->exists('coverage.xml')->willReturn(true);
+                $this->filesystem->readFromFileInfo(Argument::which('getBasename', 'coverage.xml'))->willReturn(
+                    file_get_contents(TEST_BASE_PATH.'/fixtures/clover_coverage/60-percent-coverage.xml')
+                );
+            },
+        ];
+        yield 'allLevelsReached' => [
+            [
+                'clover_file' => 'coverage.xml',
+                'minimum_level' => 50,
+                'target_level' => 55,
             ],
             $this->mockContext(RunContext::class, ['coverage.xml']),
             function () {
@@ -121,7 +154,7 @@ class CloverCoverageTest extends AbstractTaskTestCase
         yield 'noMetricElements' => [
             [
                 'clover_file' => 'coverage.xml',
-                'level' => 50,
+                'minimum_level' => 50,
             ],
             $this->mockContext(RunContext::class, ['coverage.xml']),
             function () {

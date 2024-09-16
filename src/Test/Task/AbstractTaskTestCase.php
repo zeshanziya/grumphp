@@ -95,7 +95,8 @@ abstract class AbstractTaskTestCase extends TestCase
         ContextInterface $context,
         callable $configurator,
         string $expectedErrorMessage,
-        string $resultClass = TaskResult::class
+        string $resultClass = TaskResult::class,
+        int $resultCode = TaskResult::FAILED,
     ): void {
         $task = $this->configureTask($config);
         \Closure::bind($configurator, $this)($task->getConfig()->getOptions(), $context);
@@ -103,7 +104,7 @@ abstract class AbstractTaskTestCase extends TestCase
         $result = $task->run($context);
 
         self::assertInstanceOf($resultClass, $result);
-        self::assertSame(TaskResult::FAILED, $result->getResultCode());
+        self::assertSame($resultCode, $result->getResultCode());
         self::assertSame($task, $result->getTask());
         self::assertSame($context, $result->getContext());
 

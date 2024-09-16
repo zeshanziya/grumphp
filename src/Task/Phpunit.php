@@ -28,6 +28,10 @@ class Phpunit extends AbstractExternalTask
             'exclude_group' => [],
             'always_execute' => false,
             'order' => null,
+            'coverage-clover'  => null,
+            'coverage-html'  => null,
+            'coverage-php'  => null,
+            'coverage-xml'   => null,
         ]);
 
         $resolver->addAllowedTypes('config_file', ['null', 'string']);
@@ -36,6 +40,10 @@ class Phpunit extends AbstractExternalTask
         $resolver->addAllowedTypes('exclude_group', ['array']);
         $resolver->addAllowedTypes('always_execute', ['bool']);
         $resolver->addAllowedTypes('order', ['null', 'string']);
+        $resolver->addAllowedTypes('coverage-clover', ['null', 'string']);
+        $resolver->addAllowedTypes('coverage-html', ['null', 'string']);
+        $resolver->addAllowedTypes('coverage-php', ['null', 'string']);
+        $resolver->addAllowedTypes('coverage-xml', ['null', 'string']);
 
         return ConfigOptionsResolver::fromOptionsResolver($resolver);
     }
@@ -60,6 +68,10 @@ class Phpunit extends AbstractExternalTask
         $arguments->addOptionalCommaSeparatedArgument('--group=%s', $config['group']);
         $arguments->addOptionalCommaSeparatedArgument('--exclude-group=%s', $config['exclude_group']);
         $arguments->addOptionalArgument('--order-by=%s', $config['order']);
+        $arguments->addOptionalArgument('--coverage-clover=%s', $config['coverage-clover']);
+        $arguments->addOptionalArgument('--coverage-html=%s', $config['coverage-html']);
+        $arguments->addOptionalArgument('--coverage-php=%s', $config['coverage-php']);
+        $arguments->addOptionalArgument('--coverage-xml=%s', $config['coverage-xml']);
 
         $process = $this->processBuilder->buildProcess($arguments);
         $process->run();

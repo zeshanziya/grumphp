@@ -31,6 +31,10 @@ class PhpunitTest extends AbstractExternalTaskTestCase
                 'exclude_group' => [],
                 'always_execute' => false,
                 'order' => null,
+                'coverage-clover' => null,
+                'coverage-html' => null,
+                'coverage-php' => null,
+                'coverage-xml' => null,
             ]
         ];
     }
@@ -151,6 +155,46 @@ class PhpunitTest extends AbstractExternalTaskTestCase
             'phpunit',
             [
                 'order' => '--order-by=random',
+            ]
+        ];
+        yield 'coverage-clover' => [
+            [
+                'coverage-clover' => 'clover.xml',
+            ],
+            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
+            'phpunit',
+            [
+                '--coverage-clover=clover.xml',
+            ]
+        ];
+        yield 'coverage-html' => [
+            [
+                'coverage-html' => 'coverage.html',
+            ],
+            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
+            'phpunit',
+            [
+                '--coverage-html=coverage.html',
+            ]
+        ];
+        yield 'coverage-php' => [
+            [
+                'coverage-php' => 'coverage.php',
+            ],
+            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
+            'phpunit',
+            [
+                '--coverage-php=coverage.php',
+            ]
+        ];
+        yield 'coverage-xml' => [
+            [
+                'coverage-xml' => 'coverage.xml',
+            ],
+            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
+            'phpunit',
+            [
+                '--coverage-xml=coverage.xml',
             ]
         ];
     }
