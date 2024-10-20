@@ -65,7 +65,7 @@ class Phpcs extends AbstractExternalTask
         $resolver->addAllowedTypes('report_width', ['null', 'int']);
         $resolver->addAllowedTypes('exclude', ['array']);
         $resolver->addAllowedTypes('show_sniffs_error_path', ['bool']);
-        $resolver->addAllowedTypes('parallel', ['null', 'int', 'string']);
+        $resolver->addAllowedTypes('parallel', ['null', 'int']);
 
         return ConfigOptionsResolver::fromOptionsResolver($resolver);
     }
