@@ -18,7 +18,6 @@ use GrumPHP\Task\Context\GitPreCommitContext;
 use GrumPHP\Task\Context\RunContext;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -164,76 +163,8 @@ class Phpcs extends AbstractExternalTask
         $arguments->addOptionalCommaSeparatedArgument('--ignore=%s', $config['ignore_patterns']);
         $arguments->addOptionalCommaSeparatedArgument('--exclude=%s', $config['exclude']);
         $arguments->addOptionalArgument('-s', $config['show_sniffs_error_path']);
-        $arguments->addOptionalArgument('--parallel=%s', $this->getParallelValue($config['parallel']));
+        $arguments->addOptionalArgument('--parallel=%s', $config['parallel']);
 
         return $arguments;
-    }
-
-    protected function getParallelValue(string|int|null $option): ?int
-    {
-        if ($option === null) {
-            return null;
-        }
-
-        if (is_string($option)) {
-            if ($option === 'auto') {
-                return $this->getNumberOfCpuCores() ?? 1;
-            }
-
-            throw new \InvalidArgumentException(
-                sprintf("When option 'parallel' is a string it can only be 'auto', got '%s'", $option)
-            );
-        }
-
-        if ($option < 1) {
-            throw new \InvalidArgumentException(
-                sprintf("When option 'parallel' is an integer it must be greater than zero, got %d", $option)
-            );
-        }
-
-        return $option;
-    }
-
-    /**
-     * @return int|null
-     */
-    protected function getNumberOfCpuCores(): ?int
-    {
-        try {
-            if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
-                $process = new Process(['wmic', 'cpu', 'get', 'NumberOfCores']);
-            }
-
-            if (strncasecmp(PHP_OS, 'Linux', 5) === 0 || strncasecmp(PHP_OS, 'Darwin', 6) === 0) {
-                $process = new Process(['nproc']);
-            }
-
-            if (!isset($process)) {
-                return null;
-            }
-
-            $process->run();
-
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-            $output = $process->getOutput();
-
-            if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
-                $lines = explode("\n", trim($output));
-                foreach ($lines as $line) {
-                    $cores = (int) trim($line);
-                    if ($cores > 0) {
-                        return $cores;
-                    }
-                }
-                return null;
-            }
-
-            return (int) trim($output);
-        } catch (\Exception) {
-            return null;
-        }
     }
 }
