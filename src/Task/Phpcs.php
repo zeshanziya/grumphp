@@ -47,7 +47,8 @@ class Phpcs extends AbstractExternalTask
             'report' => 'full',
             'report_width' => null,
             'exclude' => [],
-            'show_sniffs_error_path' => true
+            'show_sniffs_error_path' => true,
+            'parallel' => null,
         ]);
 
         $resolver->addAllowedTypes('standard', ['array', 'null', 'string']);
@@ -64,6 +65,7 @@ class Phpcs extends AbstractExternalTask
         $resolver->addAllowedTypes('report_width', ['null', 'int']);
         $resolver->addAllowedTypes('exclude', ['array']);
         $resolver->addAllowedTypes('show_sniffs_error_path', ['bool']);
+        $resolver->addAllowedTypes('parallel', ['null', 'int']);
 
         return ConfigOptionsResolver::fromOptionsResolver($resolver);
     }
@@ -161,6 +163,7 @@ class Phpcs extends AbstractExternalTask
         $arguments->addOptionalCommaSeparatedArgument('--ignore=%s', $config['ignore_patterns']);
         $arguments->addOptionalCommaSeparatedArgument('--exclude=%s', $config['exclude']);
         $arguments->addOptionalArgument('-s', $config['show_sniffs_error_path']);
+        $arguments->addOptionalArgument('--parallel=%s', $config['parallel']);
 
         return $arguments;
     }

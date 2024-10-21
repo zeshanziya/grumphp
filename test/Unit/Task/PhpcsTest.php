@@ -49,7 +49,8 @@ class PhpcsTest extends AbstractExternalTaskTestCase
                 'report' => 'full',
                 'report_width' => null,
                 'exclude' => [],
-                'show_sniffs_error_path' => true
+                'show_sniffs_error_path' => true,
+                'parallel' => null,
             ]
         ];
     }
@@ -353,6 +354,21 @@ class PhpcsTest extends AbstractExternalTaskTestCase
             [
                 '--extensions=php',
                 '--report=full',
+                '--report-json',
+                $this->expectFileList('hello.php'.PHP_EOL.'hello2.php'),
+            ]
+        ];
+        yield 'parallel' => [
+            [
+              'parallel' => 4,
+            ],
+            $this->mockContext(RunContext::class, ['hello.php', 'hello2.php']),
+            'phpcs',
+            [
+                '--extensions=php',
+                '--report=full',
+                '-s',
+                '--parallel=4',
                 '--report-json',
                 $this->expectFileList('hello.php'.PHP_EOL.'hello2.php'),
             ]
