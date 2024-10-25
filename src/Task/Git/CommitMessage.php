@@ -347,6 +347,8 @@ class CommitMessage implements TaskInterface
                     $everythingBelowWillBeIgnored = true;
                     return false;
                 }
+
+                /** @psalm-suppress RedundantCondition - False positive */
                 return 0 !== strpos($line, $commentChar) && !$everythingBelowWillBeIgnored;
             }
         ));
