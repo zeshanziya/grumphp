@@ -18,4 +18,11 @@
             <file name="src/Parser/Php/Visitor/AbstractVisitor.php" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <RiskyTruthyFalsyComparison>
+            <errorLevel type="suppress">
+                <directory name="src/" />
+            </errorLevel>
+        </RiskyTruthyFalsyComparison>
+    </issueHandlers>
 </psalm>

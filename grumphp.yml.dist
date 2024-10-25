@@ -47,5 +47,7 @@ grumphp:
     windows:
       tasks: [phpcs, phpspec, phpunit, composer, composer_normalize, yamllint, phplint, phpparser]
   environment:
+    variables:
+      BOX_REQUIREMENT_CHECKER: 0
     paths:
       - tools
